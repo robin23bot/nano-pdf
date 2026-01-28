@@ -14,8 +14,8 @@ This skill provides a standalone engine for transforming Markdown research resul
 
 ## Usage
 1.  **Generate Report**: Research results saved as `report.md`.
-2.  **Render**: `python3 scripts/render_pdf.py report.md --output final.pdf`.
-3.  **Print**: Use `browser` tool `action=pdf` on the generated HTML template.
+2.  **Render (WeasyPrint)**: `/home/clawdbot/clawd/skills/deep-research/venv/bin/python3 scripts/render_v4.py report.md --output final.pdf`.
+    -   *Note: This V4 engine uses WeasyPrint for guaranteed 2.5cm margins and professional typography.*
 
 ## Why a Separate Repo?
 This decouples the **Gathering of Intelligence** (Deep Research Protocol) from the **Presentation of Intelligence** (Nano-PDF). 
