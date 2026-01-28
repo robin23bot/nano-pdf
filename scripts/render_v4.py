@@ -7,7 +7,8 @@ import re
 
 def create_pdf(markdown_file, output_pdf):
     """
-    Renders Markdown to a 30-page quality PDF.
+    Renders Markdown to a luxury, 30-page quality PDF with professional design.
+    Fixes title collisions and ensures high-fidelity visual structure.
     """
     print(f"🎨 Rendering {markdown_file} to {output_pdf}...")
     
@@ -17,88 +18,140 @@ def create_pdf(markdown_file, output_pdf):
     # Convert MD to HTML
     html_content = markdown.markdown(md_text, extensions=['extra', 'codehilite', 'toc', 'tables'])
 
-    # --- LUXURY REPORT CSS ---
+    # --- LUXURY DESIGN SYSTEM ---
     styled_html = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@700;800&display=swap');
             
             @page {{
                 size: A4;
-                margin: 3cm 2.5cm;
-                @bottom-right {{
-                    content: counter(page);
+                margin: 3.5cm 2.5cm;
+                @bottom-center {{
+                    content: "Page " counter(page);
+                    font-family: 'Inter', sans-serif;
                     font-size: 9pt;
-                    color: #666;
+                    color: #888;
                 }}
             }}
             
             body {{
-                font-family: 'Inter', sans-serif;
-                font-size: 11pt;
-                line-height: 1.7;
-                color: #1a1a1a;
+                font-family: 'Lora', serif;
+                font-size: 11.5pt;
+                line-height: 1.75;
+                color: #2c3e50;
                 margin: 0;
+                background-color: white;
             }}
             
-            h1 {{ 
-                font-family: 'Playfair Display', serif;
-                font-size: 36pt; 
-                margin-bottom: 40pt; 
-                color: #000; 
-                text-align: center;
-                page-break-after: always;
+            /* Cover Page Styling */
+            .report-title-page {{
+                height: 90vh;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                height: 80vh;
+                text-align: center;
+                page-break-after: always;
             }}
             
+            h1 {{ 
+                font-family: 'Montserrat', sans-serif;
+                font-size: 42pt; 
+                line-height: 1.1;
+                margin-bottom: 20pt;
+                color: #1a1a1a;
+                text-transform: uppercase;
+                letter-spacing: -1px;
+            }}
+            
+            .subtitle {{
+                font-family: 'Inter', sans-serif;
+                font-size: 14pt;
+                color: #666;
+                margin-bottom: 60pt;
+            }}
+
+            /* Fix Section Collisions */
             h2 {{ 
-                font-family: 'Playfair Display', serif;
-                font-size: 22pt; 
-                margin-top: 50pt; 
-                border-bottom: 2px solid #000;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 24pt; 
+                margin-top: 60pt; /* Large top margin to prevent collision */
+                margin-bottom: 20pt;
+                color: #1a1a1a;
+                border-bottom: 3px solid #1a1a1a;
                 padding-bottom: 10pt;
                 page-break-before: always;
+                clear: both;
             }}
             
-            h3 {{ font-size: 16pt; margin-top: 25pt; color: #444; }}
+            h3 {{ 
+                font-family: 'Montserrat', sans-serif;
+                font-size: 16pt; 
+                margin-top: 35pt; 
+                margin-bottom: 12pt;
+                color: #34495e;
+            }}
             
-            p {{ margin-bottom: 15pt; text-align: justify; }}
+            p {{ margin-bottom: 18pt; text-align: justify; }}
             
-            /* Professional Tables */
+            /* Data Visualization / Tables */
             table {{ 
                 width: 100%; 
                 border-collapse: collapse; 
-                margin: 30pt 0;
+                margin: 40pt 0;
+                font-family: 'Inter', sans-serif;
                 font-size: 10pt;
+                box-shadow: 0 0 20px rgba(0,0,0,0.05);
             }}
             
             th {{ 
                 background-color: #1a1a1a; 
-                color: #fff;
+                color: #ffffff;
                 font-weight: 600; 
-                border: 1px solid #1a1a1a; 
-                padding: 12pt; 
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 15pt; 
+                border: 1px solid #1a1a1a;
             }}
             
             td {{ 
-                border: 1px solid #eee; 
                 padding: 12pt; 
+                border-bottom: 1px solid #eee;
+                border-left: 1px solid #f9f9f9;
+                border-right: 1px solid #f9f9f9;
             }}
             
-            tr:nth-child(even) {{ background-color: #fafafa; }}
-
-            .source {{ font-size: 8pt; color: #0066cc; word-break: break-all; }}
+            tr:nth-child(even) {{ background-color: #fcfcfc; }}
             
-            .toc {{ page-break-after: always; }}
+            blockquote {{
+                margin: 30pt 0;
+                padding: 20pt;
+                background: #f8f9fa;
+                border-left: 5px solid #1a1a1a;
+                font-style: italic;
+                color: #555;
+            }}
+
+            .source-link {{
+                font-family: 'Inter', sans-serif;
+                font-size: 8.5pt;
+                color: #3498db;
+                word-break: break-all;
+                display: block;
+                margin-top: 5pt;
+            }}
         </style>
     </head>
-    <body class="markdown-body">
+    <body>
+        <div class="report-title-page">
+            <div style="font-size: 12pt; font-family: 'Inter'; letter-spacing: 3px; color: #888; margin-bottom: 20pt;">COLOSSAL FORGE INTELLIGENCE</div>
+            <h1>{re.sub(r'# ', '', md_text.split('\n')[0]) if md_text.startswith('# ') else 'Deep Research Report'}</h1>
+            <div class="subtitle">PREPARED FOR BOSS FÚLVIO | JANUARY 2026</div>
+            <div style="margin-top: auto; font-size: 10pt; color: #aaa;">CONFIDENTIAL STRATEGIC ANALYSIS</div>
+        </div>
         <div class="container">
             {html_content}
         </div>
@@ -112,18 +165,19 @@ def create_pdf(markdown_file, output_pdf):
 
     options = {
         'page-size': 'A4',
-        'margin-top': '1.2in',
-        'margin-right': '1in',
-        'margin-bottom': '1.2in',
-        'margin-left': '1in',
+        'margin-top': '0in', # Managed by @page CSS
+        'margin-right': '0in',
+        'margin-bottom': '0in',
+        'margin-left': '0in',
         'encoding': "UTF-8",
-        'custom-header': [('Accept-Encoding', 'gzip')],
         'no-outline': None,
+        'enable-local-file-access': None,
+        'javascript-delay': 1000
     }
     
     try:
         pdfkit.from_file(temp_html, output_pdf, options=options)
-        print(f"✅ Final Masterpiece Rendered.")
+        print(f"✅ Luxury PDF Rendered successfully.")
         return True
     except Exception as e:
         print(f"❌ PDF rendering failed: {e}")
