@@ -3,172 +3,177 @@ import argparse
 import os
 import markdown
 import re
-from weasyprint import HTML, CSS
+from weasyprint import HTML
+from jinja2 import Template
 
 def create_pdf(markdown_file, output_pdf):
     """
-    Renders Markdown to a professional PDF using WeasyPrint.
-    Uses LaTeX-inspired academic typography and clean layout.
+    Renders Markdown to a professional, high-end PDF.
+    Uses WeasyPrint for deterministic layout and Jinja2 for luxury templating.
     """
     print(f"🎨 Rendering {markdown_file} to {output_pdf} via WeasyPrint...")
     
     with open(markdown_file, 'r') as f:
         md_text = f.read()
 
-    # Convert MD to HTML
-    html_body = markdown.markdown(md_text, extensions=['extra', 'codehilite', 'toc', 'tables'])
+    # Split title and body
+    lines = md_text.split('\n')
+    title = "Research Report"
+    content_start = 0
+    for i, line in enumerate(lines):
+        if line.startswith('# '):
+            title = line[2:].strip()
+            content_start = i + 1
+            break
+    
+    html_body = markdown.markdown('\n'.join(lines[content_start:]), extensions=['extra', 'codehilite', 'toc', 'tables'])
 
-    # --- LATEX-INSPIRED ACADEMIC DESIGN ---
-    # - Using Computer Modern-like fonts or high-quality Serifs
-    # - LaTeX standard margins and justified text
-    # - Section numbering and academic table style
-    styled_html = f"""
+    # --- LUXURY ACADEMIC TEMPLATE ---
+    template_str = """
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;500&family=Montserrat:wght@300;400;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;700&display=swap');
             
-            @page {{
+            @page {
                 size: A4;
-                margin: 3cm 2.5cm;
-                @bottom-center {{
+                margin: 2.54cm; /* Strict 1-inch margins */
+                @bottom-right {
                     content: counter(page);
                     font-family: 'Montserrat', sans-serif;
-                    font-size: 10pt;
-                    color: #333;
-                }}
-            }}
+                    font-size: 9pt;
+                    color: #888;
+                }
+                @top-left {
+                    content: "{{ title }}";
+                    font-family: 'Montserrat', sans-serif;
+                    font-size: 8pt;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    color: #aaa;
+                }
+            }
             
-            body {{
+            body {
                 font-family: 'Libre Baskerville', serif;
                 font-size: 11pt;
                 line-height: 1.8;
                 color: #1a1a1a;
                 margin: 0;
-                padding: 0;
-                text-rendering: optimizeLegibility;
-            }}
+                text-align: justify;
+            }
             
-            .report-title-page {{
+            .title-page {
                 text-align: center;
-                margin-top: 8cm;
-                margin-bottom: 8cm;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 page-break-after: always;
-            }}
+                border: 1pt solid #eee;
+                margin: -1cm;
+                padding: 4cm 2cm;
+            }
             
-            .brand {{
+            .brand {
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 300;
                 font-size: 12pt;
-                letter-spacing: 6px;
+                letter-spacing: 8px;
                 color: #666;
                 text-transform: uppercase;
-                margin-bottom: 3cm;
-            }}
+                margin-bottom: 4cm;
+            }
             
-            h1 {{ 
+            h1 { 
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 700;
-                font-size: 34pt; 
-                margin-bottom: 0.5cm;
-                line-height: 1.2;
-            }}
-            
-            h2 {{ 
-                font-family: 'Montserrat', sans-serif;
-                font-weight: 700;
-                font-size: 22pt; 
-                margin-top: 2.5cm;
+                font-size: 32pt; 
                 margin-bottom: 1cm;
-                border-bottom: 0.5pt solid #ccc;
-                padding-bottom: 10px;
-                page-break-before: always;
-            }}
+                line-height: 1.1;
+                text-align: center;
+            }
             
-            h3 {{ 
+            .author-box {
+                margin-top: 4cm;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 11pt;
+                color: #444;
+            }
+
+            h2 { 
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 700;
-                font-size: 16pt; 
-                margin-top: 1.5cm; 
+                font-size: 20pt; 
+                margin-top: 2cm;
+                margin-bottom: 1cm;
+                border-bottom: 1.5pt solid #1a1a1a;
+                padding-bottom: 8pt;
+                page-break-before: always;
+                text-align: left;
+            }
+            
+            h3 { 
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 700;
+                font-size: 14pt; 
+                margin-top: 1.2cm; 
                 color: #2c3e50;
-            }}
+                text-align: left;
+            }
             
-            p {{ 
-                margin-bottom: 15pt; 
-                text-align: justify; 
-                hyphens: auto;
-            }}
-            
-            /* LaTeX-style code blocks */
-            pre, code {{
-                font-family: 'Fira Code', monospace;
-                background-color: #f8f9fa;
-                font-size: 9.5pt;
-            }}
-            
-            pre {{
-                padding: 15pt;
-                border: 0.5pt solid #ddd;
-                border-radius: 2px;
-                overflow: hidden;
-            }}
-
-            /* Academic Tables */
-            table {{ 
+            table { 
                 width: 100%; 
                 border-collapse: collapse; 
                 margin: 30pt 0;
-                border-top: 1.5pt solid #1a1a1a;
-                border-bottom: 1.5pt solid #1a1a1a;
-            }}
+                border-top: 2pt solid #1a1a1a;
+                border-bottom: 2pt solid #1a1a1a;
+            }
             
-            th {{ 
+            th { 
                 border-bottom: 1pt solid #1a1a1a;
                 padding: 12pt; 
                 text-align: left;
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 700;
                 font-size: 10pt;
-                text-transform: uppercase;
-            }}
+                background-color: #f9f9f9;
+            }
             
-            td {{ 
+            td { 
                 padding: 12pt; 
-                vertical-align: top;
                 border-bottom: 0.5pt solid #eee;
-            }}
+            }
             
-            tr:last-child td {{ border-bottom: none; }}
-            
-            blockquote {{
-                margin: 20pt 0;
-                padding: 0 20pt;
-                border-left: 3pt solid #1a1a1a;
-                font-style: italic;
-                color: #444;
-            }}
+            tr:nth-child(even) { background-color: #fafafa; }
+
+            .content-container { width: 100%; }
         </style>
     </head>
     <body>
-        <div class="report-title-page">
+        <div class="title-page">
             <div class="brand">Colossal Forge Intelligence</div>
-            <h1>{re.sub(r'# ', '', md_text.split('\n')[0]) if md_text.startswith('# ') else 'Research Report'}</h1>
-            <div style="font-family: 'Montserrat', sans-serif; font-size: 11pt; color: #888; margin-top: 1cm;">
+            <h1>{{ title }}</h1>
+            <div class="author-box">
                 Commissioned by Boss Fúlvio<br>
+                Strategic Research Division<br>
                 January 2026
             </div>
         </div>
-        <div class="report-content">
-            {html_body}
+        <div class="content-container">
+            {{ body }}
         </div>
     </body>
     </html>
     """
+    
+    template = Template(template_str)
+    final_html = template.render(title=title, body=html_body)
 
-    HTML(string=styled_html).write_pdf(output_pdf)
-    print(f"✅ LaTeX-Inspired Masterpiece Rendered.")
+    HTML(string=final_html).write_pdf(output_pdf)
+    print(f"✅ Final Masterpiece Rendered with Luxury Templating.")
     return True
 
 if __name__ == "__main__":
